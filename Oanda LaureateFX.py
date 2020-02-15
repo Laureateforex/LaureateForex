@@ -15,13 +15,25 @@ key = "12a1f42967bc9ce1cd0ebf8f46da9a02-03ab1a77bb8478b89690ca77adcbf934"
 
 import oandapy
 oanda = oandapy.API(environment="practice", access_token=key)
-response = oanda.get_prices(instruments="EUR_USD"), oanda.get_prices(instruments="USD_CAD")
+response = oanda.get_prices(instruments="EUR_USD")
+response_usdcad = oanda.get_prices(instruments="USD_CAD")
 
 prices = response["prices"]
+prices_usdcad = response_usdcad["prices"]
+
 bidding_price = float(prices[0]["bid"])
+bidding_price_usdcad = float(prices_usdcad[0]["bid"])
+
 asking_price = float(prices[0]["bid"])
+asking_price_usdcad = float(prices_usdcad[0]["bid"])
+
+
 instrument = prices[0]["instrument"]
+instrument_usdcad = prices_usdcad[0]["instrument"]
+
 time = prices[0]["time"]
+time_usdcad = prices_usdcad[0]["time"]
 
 print ("[%s] %s bid=%s ask=%s" % (time, instrument, bidding_price, asking_price))
 
+print ("[%s] %s bid=%s ask=%s" % (time_usdcad, instrument_usdcad, bidding_price_usdcad, asking_price_usdcad))
