@@ -15,7 +15,7 @@ key = "12a1f42967bc9ce1cd0ebf8f46da9a02-03ab1a77bb8478b89690ca77adcbf934"
 
 import oandapy
 oanda = oandapy.API(environment="practice", access_token=key)
-response = oanda.get_prices(instruments="EUR_USD")
+response = oanda.get_prices(instruments="EUR_USD"), oanda.get_prices(instruments="USD_CAD")
 
 prices = response["prices"]
 bidding_price = float(prices[0]["bid"])
