@@ -18,6 +18,16 @@ oanda = oandapy.API(environment="practice", access_token=key)
 response = oanda.get_prices(instruments="EUR_USD")
 response_usdcad = oanda.get_prices(instruments="USD_CAD")
 
+import pandas as pd
+
+chart_sec = "H1"
+
+
+data = oanda.get_history(instrument='EUR_USD',
+                                    start='2019-01-01',
+                         end='2020-01-01',
+                         granularity='D')
+
 prices = response["prices"]
 prices_usdcad = response_usdcad["prices"]
 
