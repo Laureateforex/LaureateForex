@@ -23,9 +23,5 @@ asking_price = float(prices[0]["bid"])
 instrument = prices[0]["instrument"]
 time = prices[0]["time"]
 
-print "[%s] %s bid=%s ask=%s"  (
-    time, instrument, bidding_price, asking_price)
+print ("[%s] %s bid=%s ask=%s" % (time, instrument, bidding_price, asking_price))
 
->>> print "[%s] %s bid=%s ask=%s" % (
->>>     time, instrument, bidding_price, asking_price)
-[2015-03-26T02:22:54.776348Z] EUR_USD bid=1.09746 ask=1.09762
