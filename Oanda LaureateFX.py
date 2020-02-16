@@ -19,14 +19,21 @@ response = oanda.get_prices(instruments="EUR_USD")
 response_usdcad = oanda.get_prices(instruments="USD_CAD")
 
 import pandas as pd
+import numpy as np
 
 chart_sec = "H1"
+
+
+datafx = np.array()
 
 
 data = oanda.get_history(instrument='EUR_USD',
                                     start='2019-01-01',
                          end='2020-01-01',
                          granularity='D')
+
+df = pd.DataFrame(data['candles']).
+
 
 prices = response["prices"]
 prices_usdcad = response_usdcad["prices"]
