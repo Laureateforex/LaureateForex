@@ -9,4 +9,4 @@ ser = pd.Series(data)
 print(ser)
 
 
-Fxdataframe =  ({'date: 15,'})
+#Fxdataframe =  ({'date: 15,'})
