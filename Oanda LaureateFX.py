@@ -60,7 +60,7 @@ import matplotlib as plot
 #datafx = np.array(['1','2', '3', '4', '5', '6', '7', '8', '9'])
 
 fxseries = pd.Series(['1','2', '3', '4', '5', '6', '7', '8', '9'])
-fxseries['Hourly RSI']
+#fxseries['Hourly RSI']
 
 fxseriescurrencypairindex = ['EURUSD','USDCAD', 'GBPUSD', 'GBPAUD', 'GBPCHF', 'GBPJPY', 'USDJPY', 'EURCAD', 'EURJPY']
 fxseries.index = fxseriescurrencypairindex
