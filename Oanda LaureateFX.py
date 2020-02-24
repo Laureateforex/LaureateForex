@@ -59,11 +59,19 @@ import matplotlib as plot
 
 #datafx = np.array(['1','2', '3', '4', '5', '6', '7', '8', '9'])
 
-fxseries = pd.Series(['1','2', '3', '4', '5', '6', '7', '8', '9'])
-#fxseries['Hourly RSI']
+fxseries = pd.Series(['EURUSD','USDCAD', 'GBPUSD', 'GBPAUD', 'GBPCHF', 'GBPJPY', 'USDJPY', 'EURCAD', 'EURJPY'])
+fxseries._add_series_or_dataframe_operations()
 
-fxseriescurrencypairindex = ['EURUSD','USDCAD', 'GBPUSD', 'GBPAUD', 'GBPCHF', 'GBPJPY', 'USDJPY', 'EURCAD', 'EURJPY']
+PairTitle = ['Hourly RSI']
+
+# Pairs in column 1
+# Index as unique pair identifier
+
+
+fxseriescurrencypairindex = ['1','2', '3', '4', '5', '6', '7', '8', '9']
 fxseries.index = fxseriescurrencypairindex
+
+
 fxHourlyRSI =pd.Series(['RSIH1','RSIH2','RSIH3','RSIH4','RSIH5','RSIH6','RSIH7','RSIH8','RSIH'])
 print(fxseries)
 
