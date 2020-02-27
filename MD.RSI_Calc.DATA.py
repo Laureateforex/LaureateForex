@@ -11,8 +11,15 @@ LFX_hourly["Change"] = (Close - Close.shift(1)).fillna(0)
 
 print(LFX_hourly)
 
+if (LFX_hourly["Change"] > 0):
+    LFX_hourly["Up"] = LFX_hourly["Change"]
+
+else:
+    LFX_hourly["Down"] = LFX_hourly["Change"]
+
+"""    
 LFX_hourly["Up"] = [LFX_hourly["Change"] > 0]
-LFX_hourly["Down"] = [LFX_hourly["Change"] < 0]
+LFX_hourly["Down"] = [LFX_hourly["Change"] < 0]"""
 
 LFX_hourly["Average Up"] = statistics.mean(LFX_hourly["Up"][1:n+1])
 for i in range(n+1, len(LFX_hourly), 1):
