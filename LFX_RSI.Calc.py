@@ -3,8 +3,9 @@ import pandas as pd
 LFX_daily = pd.DataFrame()
 n = 14
 
-data = pd.read_csv(r'EUR GBP Historical Data')
-LFX_daily["Close"] = data["Price"].astype(float)
+data = pd.read_csv(r'exchange.data.csv')
+
+LFX_daily["Close"] = data["EUR/USD Close"].astype(float)
 
 
 LFX_daily["Change"] = (LFX_daily["Close"] - LFX_daily["Close"].shift(1)).fillna(0)
