@@ -59,13 +59,20 @@ import matplotlib as plot
 
 #datafx = np.array(['1','2', '3', '4', '5', '6', '7', '8', '9'])
 
-fxseries = pd.Series(['1','2', '3', '4', '5', '6', '7', '8', '9'])
-#fxseries['Hourly RSI']
+fxseries = pd.Series(['EURUSD','USDCAD', 'GBPUSD', 'GBPAUD', 'GBPCHF', 'GBPJPY', 'USDJPY', 'EURCAD', 'EURJPY'])
 
-fxseriescurrencypairindex = ['EURUSD','USDCAD', 'GBPUSD', 'GBPAUD', 'GBPCHF', 'GBPJPY', 'USDJPY', 'EURCAD', 'EURJPY']
+
+PairTitle = ['Hourly RSI']
+
+
+
+fxseriescurrencypairindex = ['1','2', '3', '4', '5', '6', '7', '8', '9']
 fxseries.index = fxseriescurrencypairindex
+
+
 fxHourlyRSI =pd.Series(['RSIH1','RSIH2','RSIH3','RSIH4','RSIH5','RSIH6','RSIH7','RSIH8','RSIH'])
 print(fxseries)
+
 
 
 #print ("[%s] %s bid=%s ask=%s" % (time, instrument, bidding_price, asking_price))

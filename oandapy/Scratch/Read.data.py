@@ -1,7 +1,7 @@
 import pandas as pd
 LFX_series = pd.Series()
 
-data = pd.read_csv(r'EUR GBP Historical Data')
+data = pd.read_csv(r'../../EUR GBP Historical Data')
 
 Close = data["Price"].astype(float)
 

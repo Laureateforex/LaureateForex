@@ -3,7 +3,7 @@ import statistics
 df = pd.DataFrame()
 n = 14
 
-data = pd.read_csv(r'EUR GBP Historical Data')
+data = pd.read_csv(r'../../EUR GBP Historical Data')
 
 Close = data["Price"].astype(float)
 
