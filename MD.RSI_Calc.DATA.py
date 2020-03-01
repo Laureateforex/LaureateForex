@@ -1,6 +1,6 @@
 import pandas as pd
 import statistics
-LFX_hourly = pd.Series()
+LFX_hourly = pd.DataFrame()
 n = 14
 
 data = pd.read_csv(r'EUR GBP Historical Data')
@@ -17,7 +17,7 @@ if (LFX_hourly["Change"] > 0):
 else:
     LFX_hourly["Down"] = LFX_hourly["Change"]
 
-"""    
+"""
 LFX_hourly["Up"] = [LFX_hourly["Change"] > 0]
 LFX_hourly["Down"] = [LFX_hourly["Change"] < 0]"""
 
