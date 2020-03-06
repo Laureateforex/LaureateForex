@@ -36,6 +36,10 @@ def rsi(price):
     LFX_daily["RSI"] = 100 - 100/(LFX_daily["RS"]+1)
     return LFX_daily
 
+    If LFX_daily[rsi("EUR/USD Close")] > 66 :
+             LFX_daily[“match”] = “yes”
+
+
 rsi("EUR/USD Close")
 print(LFX_daily)
 rsi("USD/JPY Close")

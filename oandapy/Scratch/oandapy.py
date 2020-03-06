@@ -1,6 +1,6 @@
 import json
 import requests
-from .exceptions import BadEnvironment, OandaError
+from oandapy.exceptions import BadEnvironment, OandaError
 
 """ OANDA API wrapper for OANDA's REST API """
 
