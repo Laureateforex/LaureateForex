@@ -1,4 +1,6 @@
 #IG rest API parameters
+import sys
+
 import requests
 
 rest_api_key = "<536047927760b1f4b0f43763feea9fdb13a5f9fby>"
