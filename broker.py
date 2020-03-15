@@ -4,7 +4,7 @@ import sys
 import requests
 
 rest_api_key = "3f53e9f321bb5aaed46724a5539083aa661bc58b"
-rest_identifier = "impulse2585"
+rest_identifier = "ZNB8J"
 rest_password = "Algobroz599"
 # IG rest login request
 rest_url = "https://api.ig.com/gateway/deal/session"
