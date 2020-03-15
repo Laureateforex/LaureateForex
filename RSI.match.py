@@ -78,7 +78,7 @@ def rsi_hourly(price):
     LFX_hourly["match"] = LFX_hourly["match"].fillna("wait")
     return LFX_hourly
 
-
+"""
 def open_position():
     if LFX_daily["match"][0] == "buy" and LFX_hourly["match"][0] == "buy":
         print("go long")
@@ -86,10 +86,12 @@ def open_position():
         print("go short")
     else:
         print("wait")
-    return LFX_hourly
+    return print("this is too easy") """
 
 
 rsi_daily("EUR/USD Close")
 rsi_hourly("EUR/USD Close")
-open_position()
-print(open_position)
+print(rsi_daily)
+print(rsi_hourly)
+"""open_position()
+print(open_position)"""
