@@ -11,6 +11,7 @@ data_hourly = pd.read_csv(r'hourly_data.csv')
 
 def rsi_daily(price):
     LFX_daily["Close"] = data_daily[price].astype(float)
+    LFX_daily["Close"] = list(LFX_daily["Close"][::-1])
 
     LFX_daily["Change"] = (LFX_daily["Close"] - LFX_daily["Close"].shift(1)).fillna(0)
 
@@ -46,6 +47,7 @@ def rsi_daily(price):
 
 def rsi_hourly(price):
     LFX_hourly["Close"] = data_hourly[price].astype(float)
+    LFX_hourly["Close"] = list(LFX_hourly["Close"][::-1])
 
     LFX_hourly["Change"] = (LFX_hourly["Close"] - LFX_hourly["Close"].shift(1)).fillna(0)
 
@@ -79,7 +81,6 @@ def rsi_hourly(price):
     return LFX_hourly
 
 
-"""
 def open_position():
     if LFX_daily["match"][0] == "buy" and LFX_hourly["match"][0] == "buy":
         print("go long")
@@ -87,13 +88,10 @@ def open_position():
         print("go short")
     else:
         print("wait")
-    return print("this is too easy") """
+    return print("this is too easy")
 
 
-
-
-
-print(rsi_daily('EUR/USD Close'))
-print(rsi_hourly('EUR/USD Close'))
-"""open_position()
-print(open_position)"""
+print(rsi_daily("EUR/USD Close"))
+print(rsi_hourly("EUR/USD Close"))
+open_position()
+print(open_position)
