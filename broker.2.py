@@ -1,41 +1,33 @@
-from ib.opt import Connection
-from ib.ext.Contract import Contract
-from ib.ext.Order import Order
+from ibapi.client import EClient
+from ibapi.wrapper import EWrapper
+from ibapi.contract import Contract
 
+class TestApp(EWrapper, EClient):
+    def __init__(self):
+        EClient.__init__(self, self)
 
-def make_contract(symbol, sec_type, exchange, primary_exchange, currency):
-    Contract.M_symbol = symbol
-    Contract.M_secType = sec_type
-    Contract.M_exchange = exchange
-    Contract.M_primaryExch = primary_exchange
-    Contract.M_currency = currency
-    return Contract
+    def error(self, reqId, errorCode, errorString):
+        print("Error: ", reqId, " ", errorCode, " ", errorString)
 
-
-def make_order(action, quantity, price = None):
-    if price is not None:
-        order = Order()
-        order.m_orderType = 'LMT'
-        order.m_totalQuantity = quantity
-        order.m_action = action
-        order.m_lmtPrice = price
-
-    else:
-        order = Order()
-        order.m_orderType = 'MKT'
-        order.m_totalQuantity = quantity
-        order.m_action = action
-
-    return order
+    def contractDetails(self, reqId, contractDetails):
+        print("contractDetails: ", reqId, " ", contractDetails)
 
 
 def main():
-    conn = Connection.create(port=7497, clientId=998)
-    conn.connect()
-    oid = 1
-    cont = make_contract('EUR', 'CASH', 'SMART', 'SMART', 'USD')
-    offer = make_order('BUY', 1, 200)
+    app = TestApp()
 
-    conn.placeOrder(oid, cont, offer)
+    app.connect("127.0.0.1", 7497, 988)  # LFX comment - this needs to be host, port, client ID
 
-    conn.disconnect()
+    contract = Contract()
+    contract.symbol = "EUR"
+    contract.secType = "CASH"
+    contract.currency = "GBP"
+    contract.exchange = "IDEALPRO"
+
+    app.reqContractDetails(1, contract)
+
+    app.run()
+
+
+if __name__ == "__main__":
+    main()
