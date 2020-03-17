@@ -2,6 +2,7 @@ from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
 from ibapi.contract import Contract
 from ContractSamples import ContractSamples
+from ibapi.ticktype import TickTypeEnum
 
 
 class TestApp(EWrapper, EClient):
@@ -11,22 +12,18 @@ class TestApp(EWrapper, EClient):
     def error(self, reqId, errorCode, errorString):
         print("Error: ", reqId, " ", errorCode, " ", errorString)
 
-    def contractDetails(self, reqId, contractDetails):
-        print("contractDetails: ", reqId, " ", contractDetails)
-
+    def historicalData(self, reqId, bar):
+        print("Historical Data: ", reqId, "Date: ", bar.date, "Open: ", bar.open, "High: ", bar.high, "Low: ", bar.low,
+              "Close: ", bar.close, "Volume: ", bar.volume, "Count: ", bar.barCount, "WAP: ", bar.average)
 
 def main():
     app = TestApp()
 
     app.connect("127.0.0.1", 7497, 988)  # LFX comment - this needs to be host, port, client ID
 
-    contracts = [ContractSamples.EurGbpFx(), ContractSamples.AudChfFx(), ContractSamples.ChfJpyFx(),
-                 ContractSamples.EurChfFx(), ContractSamples.EurJpyFx(), ContractSamples.EurUsdFx(),
-                 ContractSamples.GbpChfFx(), ContractSamples.GbpJpyFx(), ContractSamples.NzdUsdFx(),
-                 ContractSamples.UsdJpyFx()]
+    contract = ContractSamples.EurGbpFx()
 
-    for i in contracts:
-        app.reqContractDetails(1, i)
+    app.reqHistoricalData(1, contract, "", "7 D", "1 hour", "MIDPOINT", 0, 1, False, [])
 
     app.run()
 
