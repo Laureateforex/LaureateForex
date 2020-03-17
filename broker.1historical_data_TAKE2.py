@@ -4,6 +4,7 @@ from ibapi.contract import Contract
 from ContractSamples import ContractSamples
 from ibapi.ticktype import TickTypeEnum
 import pandas as pd
+import datetime
 
 df = pd.DataFrame()
 
@@ -15,14 +16,21 @@ class TestApp(EWrapper, EClient):
         print("Error: ", reqId, " ", errorCode, " ", errorString)
 
     def historicalData(self, reqId, bar):
-        """print("Historical Data: ", reqId, "Date: ", bar.date, "Open: ", bar.open, "High: ", bar.high, "Low: ", bar.low,
+        data = {'Data':  [reqId],
+                'Date': [bar.date],
+                'Close': [bar.close],
+                }
+        data = pd.DataFrame(data, columns=['Data', 'Date', 'Close'])
+        print(data)
+
+"""
+    def historicalDataOperations_req(self):
+        queryTime = (datetime.datetime.today() - datetime.timedelta(days=180)).strftime("%Y%m%d %H:%M:%S")
+        self.reqHistoricalData(1, ContractSamples.EurGbpFx(), queryTime,
+                               "1 D", "1 hour", "Close", 1, 1, False, [])"""
+"""print("Historical Data: ", reqId, "Date: ", bar.date, "Open: ", bar.open, "High: ", bar.high, "Low: ", bar.low,
                 "Close. ", bar.close, "Volume: ", bar.volume, "Count: ", bar.barCount, "WAP: ", bar.average)"""
-        df = pd.DataFrame(columns=['Data', 'Date', 'Close'])
-        id = reqId
-        close = bar.close
-        df["ID"] = id
-        df["Close"] = close
-        print(df)
+
 
 """
     def data_to_df(self):
@@ -38,6 +46,7 @@ def main():
     contract = ContractSamples.EurGbpFx()
 
     app.reqHistoricalData(1, contract, "", "7 D", "1 hour", "MIDPOINT", 0, 1, False, [])
+    #app.historicalDataOperations_req()
 
     app.run()
 
