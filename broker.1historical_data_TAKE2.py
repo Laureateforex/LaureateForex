@@ -21,7 +21,8 @@ class TestApp(EWrapper, EClient):
                 'Close': [bar.close],
                 }
         data = pd.DataFrame(data, columns=['Data', 'Date', 'Close'])
-        print(data)
+        result = pd.concat(data)
+        print(result)
 
 """
     def historicalDataOperations_req(self):
