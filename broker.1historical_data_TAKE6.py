@@ -58,7 +58,7 @@ class IBWrapper(EWrapper):
         else:
             self.exporter.handleHistoricalDataEnd(reqId, start, end)
 
-    def contractDetails(self, reqId: int, contractDetails: ibapi.contract.ContractDetails):
+    def contractDetails(self, reqId, contractDetails):
         self.resolved_contract = contractDetails.summary
 
     def contractDetailsEnd(self, reqId: int):
