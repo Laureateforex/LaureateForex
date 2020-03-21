@@ -20,9 +20,7 @@ class TestApp(EWrapper, EClient):
         self.hDataIndex = []
         self.hDataRecords = []
         self.lineCount = 0
-        self.hDataCurrent = False
-        self.hDataMonthly = False
-        self.cDataPrice = 0
+        self.df = pd.DataFrame()
 
 
     def error(self, reqId, errorCode, errorString):
@@ -38,17 +36,17 @@ class TestApp(EWrapper, EClient):
         row.append(bar.volume)
         row.append(bar.barCount)
         row.append(bar.average)
-        self.hDataRecords.append(row)
-        self.hDataIndex.append(self.lineCount)
-        self.lineCount += 1
+        self.df.append(row)
+        print(df)
         return("HistoricalData. ", reqId, " ,Date:", bar.date, ",Open:", bar.open,",High:", bar.high, ",Low:", bar.low, ",Close:", bar.close, ",Volume:", bar.volume,",Count:", bar.barCount, ",WAP:", bar.average)
 
-    def historicalDataEnd(self, reqId: int, start: str, end: str):
+
+def historicalDataEnd(self, reqId: int, start: str, end: str):
         super().historicalDataEnd(reqId, start, end)
         self.hData["columns"] = self.hDataColumns
         self.hData["index"] = self.hDataIndex
         self.hData["data"] = self.hDataRecords
-        print(self.hData)
+        print(df)
 
 
 def main():
@@ -59,6 +57,7 @@ def main():
     contract = ContractSamples.EurGbpFx()
 
     app.reqHistoricalData(1, contract, "", "7 D", "1 hour", "MIDPOINT", 0, 1, False, [])
+
 
     app.run()
 

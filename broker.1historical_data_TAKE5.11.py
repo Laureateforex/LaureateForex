@@ -9,7 +9,6 @@ import ibapi.common
 import json
 import csv
 
-df = pd.DataFrame()
 
 
 class TestApp(EWrapper, EClient):
@@ -44,50 +43,13 @@ class TestApp(EWrapper, EClient):
         self.lineCount += 1
         return("HistoricalData. ", reqId, " ,Date:", bar.date, ",Open:", bar.open,",High:", bar.high, ",Low:", bar.low, ",Close:", bar.close, ",Volume:", bar.volume,",Count:", bar.barCount, ",WAP:", bar.average)
 
+
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         super().historicalDataEnd(reqId, start, end)
         self.hData["columns"] = self.hDataColumns
         self.hData["index"] = self.hDataIndex
         self.hData["data"] = self.hDataRecords
 
-        if(self.currentSymbol == 'SPY'):
-            current_file = 'data/spy_current.json'
-            month_file = 'data/spy_month.json'
-            all_file = 'data/spy.json'
-            all_file_csv = 'data/spy.csv'
-        elif(self.currentSymbol == 'IWM'):
-            current_file = 'data/iwm_current.json'
-            month_file = 'data/iwm_month.json'
-            all_file = 'data/iwm.json'
-            all_file_csv = 'data/iwm.csv'
-
-        jsonDump = json.dumps(self.hData)
-        if(self.hDataCurrent):
-            with open(current_file, 'w') as f:
-                f.write(jsonDump)
-            self.hDataCurrent = False
-        elif(self.hDataMonthly):
-            with open(month_file, 'w') as f:
-                f.write(jsonDump)
-            self.hDataMonthly = False
-        else:
-            with open(all_file, 'w') as f:
-                #writer = csv.writer(f, delimiter=',', lineterminator='\r\n', quotechar="'")
-                f.write(jsonDump)
-            w = csv.writer(open(all_file_csv, "wt", newline=''), quoting=csv.QUOTE_NONE, escapechar=' ', quotechar='')
-            #w = csv.writer(fw, delimiter=',', lineterminator='\r\n', quotechar="'")
-
-            for item in self.hData.items():
-                w.writerow([item[1]])
-        #clear hData
-        self.hData.clear()
-        self.hDataRecords.clear()
-        self.hDataIndex.clear()
-        self.lineCount = 0
-
-        print("HistoricalDataEnd ", reqId, "from", start, "to", end)
-        if(self.isConnected()):
-            self.disconnect()
 
 def main():
     app = TestApp()
