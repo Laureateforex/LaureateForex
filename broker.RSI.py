@@ -10,12 +10,14 @@ import ibapi.common
 import json
 import csv
 
+n = 14
+
 
 class TestApp(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
         self.hData = []
-
+        self.df = pd.DataFrame()
 
     def error(self, reqId, errorCode, errorString):
         print("Error: ", reqId, " ", errorCode, " ", errorString)
@@ -27,9 +29,34 @@ class TestApp(EWrapper, EClient):
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         super().historicalDataEnd(reqId, start, end)
-        df = pd.DataFrame(self.hData)
-        df.columns = ["Close"]
-        print(df)
+        global n
+        self.df["Close"] = self.hData
+        self.df["Change"] = (self.df["Close"] - self.df["Close"].shift(1)).fillna(0)
+
+        self.df["Up"] = (self.df["Change"][self.df["Change"] > 0])
+        self.df["Up"] = self.df["Up"].fillna(0)
+
+        self.df["Down"] = (abs(self.df["Change"])[self.df["Change"] < 0]).fillna(0)
+        self.df["Down"] = self.df["Down"].fillna(0)
+
+        self.df["Ave Up"] = 0.00
+        self.df["Ave Up"][n] = self.df["Up"][1:n + 1].mean()
+
+        for i in range(n + 1, len(self.df), 1):
+            self.df["Ave Up"][i] = (self.df["Ave Up"][i - 1] * (n - 1) + self.df["Up"][i]) / n
+
+        self.df["Ave Down"] = 0.00
+        self.df["Ave Down"][n] = self.df["Down"][1:n + 1].mean()
+
+        for i in range(n + 1, len(self.df), 1):
+            self.df["Ave Down"][i] = (self.df["Ave Down"][i - 1] * (n - 1) + self.df["Down"][i]) / n
+
+        self.df["Speed"] = (self.df["Ave Up"] / self.df["Ave Down"]).fillna(0)
+
+        self.df["LRP"] = 100 - 100 / (self.df["Speed"] + 1)
+        self.df["FLRP"] = list(self.df["LRP"][::-1])
+
+        print(self.df)
 
 
 def main():
