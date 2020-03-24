@@ -24,7 +24,6 @@ class TestApp(EWrapper, EClient):
         self.globalCancelOnly = False
         self.started = False
         self.nextValidOrderId = None
-        self.nKeybInt = 0
         self.started = False
         self.done = False
 
@@ -122,6 +121,8 @@ def main():
     # order = OrderSamples.MarketOrder("buy", 10)
 
     app.reqHistoricalData(1, contract, "", "7 D", "1 hour", "MIDPOINT", 0, 1, False, [])
+
+    app.nextValidId(orderId=1)
 
     Timer(3, app.stop).start()
 
