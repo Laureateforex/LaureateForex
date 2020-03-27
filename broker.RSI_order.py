@@ -75,11 +75,8 @@ class TestApp(EWrapper, EClient):
               execution.orderId, execution.shares, execution.lastLiquidity)
 
     def historicalDataOperations_req(self):
-        queryTime = (datetime.datetime.today() - datetime.timedelta(days=30)).strftime("%Y%m%d %H:%M:%S")
-        self.reqHistoricalData(1, ContractSamples.EurGbpFx(), queryTime,
+        self.reqHistoricalData(1, ContractSamples.EurGbpFx(), "",
                                "1 M", "1 day", "MIDPOINT", 1, 1, False, [])
-        self.reqHistoricalData(2, ContractSamples.EurGbpFx(), "",
-                               "7 D", "1 hour", "MIDPOINT", 1, 1, True, [])
 
     def historicalData(self, reqId: int, bar):
         self.hData.append(bar.close)
@@ -126,8 +123,6 @@ def main():
     contract = ContractSamples.EurGbpFx()
 
     # order = OrderSamples.MarketOrder("buy", 10)
-
-    app.reqHistoricalData(1, contract, "", "7 D", "1 hour", "MIDPOINT", 0, 1, False, [])
 
     app.nextValidId(orderId=1)
 

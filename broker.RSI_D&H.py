@@ -65,10 +65,9 @@ class TestApp(EWrapper, EClient):
         print("Executing cancels ... finished")
 
     def historicalDataOperations_req(self):
-        queryTime = (datetime.datetime.today() - datetime.timedelta(days=30)).strftime("%Y%m%d %H:%M:%S")
-        self.reqHistoricalData(1, ContractSamples.EurGbpFx(), queryTime,
+        self.reqHistoricalData(1, ContractSamples.EurGbpFx(), "",
                                "1 M", "1 day", "MIDPOINT", 1, 1, False, [])
-        self.reqHistoricalData(2, ContractSamples.EurGbpFx(), queryTime,
+        self.reqHistoricalData(2, ContractSamples.EurGbpFx(), "",
                                "1 W", "1 hour", "MIDPOINT", 1, 1, False, [])
 
     def historicalData(self, reqId: int, bar):
@@ -142,8 +141,6 @@ def main():
     app = TestApp()
 
     app.connect("127.0.0.1", 7497, 988)  # LFX comment - this needs to be host, port, client ID
-
-    contract = ContractSamples.EurGbpFx()
 
     # order = OrderSamples.MarketOrder("buy", 10)
 
