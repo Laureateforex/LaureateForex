@@ -20,7 +20,9 @@ class TestApp(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
         self.hData = []
+        self.hDataD = []
         self.df = pd.DataFrame()
+        self.df1 = pd.DataFrame()
         self.globalCancelOnly = False
         self.started = False
         self.nextValidOrderId = None
@@ -62,33 +64,23 @@ class TestApp(EWrapper, EClient):
         # self.marketDepthOperations_cancel()
         print("Executing cancels ... finished")
 
-    def orderStatus(self, orderId, status, filled, remaining, avgFillPrice, permId, parentId, lastFillPrice, clientId, whyHeld, mktCapPrice):
-        print("OrderStatus. ID: ", orderId, ", Status: ", status, ", filled: ", filled,
-              ", Remaining: ", remaining, ", LastFillPrice: ", lastFillPrice)
-
-    def openOrder(self, orderId, contract, order, orderState):
-        print("OpenOrder. ID: ", orderId, contract.symbol, contract.secType, "0", contract.exchange,
-              "1", order.action, order.orderType, order.totalQuantity)
-
-    def execDetails(self, reqId, contract, execution):
-        print("ExecDetails: ", reqId, contract.symbol, contract.secType, contract.currency, execution.execId,
-              execution.orderId, execution.shares, execution.lastLiquidity)
-
     def historicalDataOperations_req(self):
         queryTime = (datetime.datetime.today() - datetime.timedelta(days=30)).strftime("%Y%m%d %H:%M:%S")
         self.reqHistoricalData(1, ContractSamples.EurGbpFx(), queryTime,
                                "1 M", "1 day", "MIDPOINT", 1, 1, False, [])
-        self.reqHistoricalData(2, ContractSamples.EurGbpFx(), "",
-                               "7 D", "1 hour", "MIDPOINT", 1, 1, True, [])
+        self.reqHistoricalData(2, ContractSamples.EurGbpFx(), queryTime,
+                               "1 W", "1 hour", "MIDPOINT", 1, 1, False, [])
 
     def historicalData(self, reqId: int, bar):
-        self.hData.append(bar.close)
-        return ("HistoricalData. ", reqId, " ,Date:", bar.date, ",Open:", bar.open, ",High:", bar.high, ",Low:", bar.low,
-                ",Close:", bar.close, ",Volume:", bar.volume, ",Count:", bar.barCount, ",WAP:", bar.average)
+        if reqId == 1:
+            self.hData.append(bar.close)
+        else:
+            self.hDataD.append(bar.close)
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         super().historicalDataEnd(reqId, start, end)
         global n
+
         self.df["Close"] = self.hData
         self.df["Change"] = (self.df["Close"] - self.df["Close"].shift(1)).fillna(0)
 
@@ -117,6 +109,34 @@ class TestApp(EWrapper, EClient):
 
         print(self.df)
 
+        self.df1["Close"] = self.hDataD
+        self.df1["Change"] = (self.df1["Close"] - self.df1["Close"].shift(1)).fillna(0)
+
+        self.df1["Up"] = (self.df1["Change"][self.df1["Change"] > 0])
+        self.df1["Up"] = self.df1["Up"].fillna(0)
+
+        self.df1["Down"] = (abs(self.df1["Change"])[self.df1["Change"] < 0]).fillna(0)
+        self.df1["Down"] = self.df1["Down"].fillna(0)
+
+        self.df1["Ave Up"] = 0.00
+        self.df1["Ave Up"][n] = self.df1["Up"][1:n + 1].mean()
+
+        for i in range(n + 1, len(self.df1), 1):
+            self.df1["Ave Up"][i] = (self.df1["Ave Up"][i - 1] * (n - 1) + self.df1["Up"][i]) / n
+
+        self.df1["Ave Down"] = 0.00
+        self.df1["Ave Down"][n] = self.df1["Down"][1:n + 1].mean()
+
+        for i in range(n + 1, len(self.df1), 1):
+            self.df1["Ave Down"][i] = (self.df1["Ave Down"][i - 1] * (n - 1) + self.df1["Down"][i]) / n
+
+        self.df1["Speed"] = (self.df1["Ave Up"] / self.df1["Ave Down"]).fillna(0)
+
+        self.df1["LRP"] = 100 - 100 / (self.df1["Speed"] + 1)
+        self.df1["FLRP"] = list(self.df1["LRP"][::-1])
+
+        print(self.df1)
+
 
 def main():
     app = TestApp()
@@ -126,8 +146,6 @@ def main():
     contract = ContractSamples.EurGbpFx()
 
     # order = OrderSamples.MarketOrder("buy", 10)
-
-    app.reqHistoricalData(1, contract, "", "7 D", "1 hour", "MIDPOINT", 0, 1, False, [])
 
     app.nextValidId(orderId=1)
 

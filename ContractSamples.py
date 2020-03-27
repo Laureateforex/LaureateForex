@@ -37,7 +37,7 @@ class ContractSamples:
         return contract
 
     @staticmethod
-    def EurGbpFx():
+    def UsdChfFx():
         # ! [cashcontract]
         contract = Contract()
         contract.symbol = "USD"
