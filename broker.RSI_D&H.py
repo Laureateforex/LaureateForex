@@ -108,31 +108,31 @@ class TestApp(EWrapper, EClient):
 
         print(self.df)
 
-        self.df1["Close"] = self.hDataD
-        self.df1["Change"] = (self.df1["Close"] - self.df1["Close"].shift(1)).fillna(0)
+        self.df1["CloseD"] = self.hDataD
+        self.df1["ChangeD"] = (self.df1["CloseD"] - self.df1["CloseD"].shift(1)).fillna(0)
 
-        self.df1["Up"] = (self.df1["Change"][self.df1["Change"] > 0])
-        self.df1["Up"] = self.df1["Up"].fillna(0)
+        self.df1["UpD"] = (self.df1["ChangeD"][self.df1["ChangeD"] > 0])
+        self.df1["UpD"] = self.df1["UpD"].fillna(0)
 
-        self.df1["Down"] = (abs(self.df1["Change"])[self.df1["Change"] < 0]).fillna(0)
-        self.df1["Down"] = self.df1["Down"].fillna(0)
+        self.df1["DownD"] = (abs(self.df1["ChangeD"])[self.df1["ChangeD"] < 0]).fillna(0)
+        self.df1["DownD"] = self.df1["DownD"].fillna(0)
 
-        self.df1["Ave Up"] = 0.00
-        self.df1["Ave Up"][n] = self.df1["Up"][1:n + 1].mean()
-
-        for i in range(n + 1, len(self.df1), 1):
-            self.df1["Ave Up"][i] = (self.df1["Ave Up"][i - 1] * (n - 1) + self.df1["Up"][i]) / n
-
-        self.df1["Ave Down"] = 0.00
-        self.df1["Ave Down"][n] = self.df1["Down"][1:n + 1].mean()
+        self.df1["Ave UpD"] = 0.00
+        self.df1["Ave UpD"][n] = self.df1["UpD"][1:n + 1].mean()
 
         for i in range(n + 1, len(self.df1), 1):
-            self.df1["Ave Down"][i] = (self.df1["Ave Down"][i - 1] * (n - 1) + self.df1["Down"][i]) / n
+            self.df1["Ave UpD"][i] = (self.df1["Ave UpD"][i - 1] * (n - 1) + self.df1["UpD"][i]) / n
 
-        self.df1["Speed"] = (self.df1["Ave Up"] / self.df1["Ave Down"]).fillna(0)
+        self.df1["Ave DownD"] = 0.00
+        self.df1["Ave DownD"][n] = self.df1["DownD"][1:n + 1].mean()
 
-        self.df1["LRP"] = 100 - 100 / (self.df1["Speed"] + 1)
-        self.df1["FLRP"] = list(self.df1["LRP"][::-1])
+        for i in range(n + 1, len(self.df1), 1):
+            self.df1["Ave DownD"][i] = (self.df1["Ave DownD"][i - 1] * (n - 1) + self.df1["DownD"][i]) / n
+
+        self.df1["SpeedD"] = (self.df1["Ave UpD"] / self.df1["Ave DownD"]).fillna(0)
+
+        self.df1["LRPD"] = 100 - 100 / (self.df1["SpeedD"] + 1)
+        self.df1["FLRPD"] = list(self.df1["LRPD"][::-1])
 
         print(self.df1)
 
