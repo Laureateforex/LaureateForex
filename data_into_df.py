@@ -51,10 +51,14 @@ class TestApp(EWrapper, EClient):
         self.reqHistoricalData(1, ContractSamples.EurGbpFx(), "",
                                "1 M", "1 day", "MIDPOINT", 1, 1, False, [])
         self.reqHistoricalData(2, ContractSamples.EurGbpFx(), "",
-                               "1 W", "1 hour", "MIDPOINT", 1, 1, False, [])
+                               "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
 
     def historicalData(self, reqId: int, bar):
-        self.hData.append(bar.close)
+        if reqId == 1:
+            self.hData.append(bar.close)
+        else:
+            pass
+
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         super().historicalDataEnd(reqId, start, end)
@@ -62,7 +66,7 @@ class TestApp(EWrapper, EClient):
 
     def data(self):
         self.df["Close"] = self.hData
-        print(self.df)
+
 
 
 def main():
