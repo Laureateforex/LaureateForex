@@ -81,7 +81,7 @@ class TestApp(EWrapper, EClient):
         super().historicalDataEnd(reqId, start, end)
         self.lrp_hourly()
         self.lrp_daily()
-        self.atr_calc()
+        # self.atr_calc()
 
     def lrp_hourly(self):
         global n
@@ -110,6 +110,13 @@ class TestApp(EWrapper, EClient):
 
         self.df["LRP"] = 100 - 100 / (self.df["Speed"] + 1)
         self.df["FLRP"] = list(self.df["LRP"][::-1])
+
+        self.df.loc[self.df["FLRP"] < 33, "match"] = "sell"
+        self.df.loc[self.df["FLRP"] < 15, "match"] = "wait"
+        self.df.loc[self.df["FLRP"] > 66, "match"] = "buy"
+        self.df.loc[self.df["FLRP"] > 80, "match"] = "wait"
+        self.df["match"] = self.df["match"].fillna("wait")
+
         print(self.df)
 
     def lrp_daily(self):
@@ -140,9 +147,15 @@ class TestApp(EWrapper, EClient):
         self.df1["LRPD"] = 100 - 100 / (self.df1["SpeedD"] + 1)
         self.df1["FLRPD"] = list(self.df1["LRPD"][::-1])
 
+        """self.df1.loc[self.df1["FLRP"] < 33, "match"] = "sell"
+        self.df1.loc[self.df1["FLRP"] < 15, "match"] = "wait"
+        self.df1.loc[self.df1["FLRP"] > 66, "match"] = "buy"
+        self.df1.loc[self.df1["FLRP"] > 80, "match"] = "wait"
+        self.df1["match"] = self.df1["match"].fillna("wait")"""
+
         print(self.df1)
 
-    def atr_calc(self):
+    """def atr_calc(self):
         start = (datetime.datetime.strptime(date, '%Y-%m-%d') - datetime.timedelta(days=n)).strftime('%Y-%m-%d')
         df = self.date[stock][start:date]
         trs = []
@@ -150,7 +163,7 @@ class TestApp(EWrapper, EClient):
             tr = max(row['_high'], row['_close']) - min(row['_low'], row['_close'])
             trs.append(tr)
         atr = list(pandas.Series(trs[::-1]).ewm(span=len(trs)).mean())[0]
-        return atr_calc()
+        return atr_calc()"""
 
 def main():
     app = TestApp()
