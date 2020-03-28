@@ -23,6 +23,7 @@ class TestApp(EWrapper, EClient):
         self.hDataD = []
         self.df = pd.DataFrame()
         self.df1 = pd.DataFrame()
+        self.atr = pd.DataFrame()
         self.globalCancelOnly = False
         self.started = False
         self.nextValidOrderId = None
@@ -78,8 +79,12 @@ class TestApp(EWrapper, EClient):
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         super().historicalDataEnd(reqId, start, end)
-        global n
+        self.lrp_hourly()
+        self.lrp_daily()
+        self.atr_calc()
 
+    def lrp_hourly(self):
+        global n
         self.df["Close"] = self.hData
         self.df["Change"] = (self.df["Close"] - self.df["Close"].shift(1)).fillna(0)
 
@@ -105,9 +110,10 @@ class TestApp(EWrapper, EClient):
 
         self.df["LRP"] = 100 - 100 / (self.df["Speed"] + 1)
         self.df["FLRP"] = list(self.df["LRP"][::-1])
-
         print(self.df)
 
+    def lrp_daily(self):
+        global n
         self.df1["CloseD"] = self.hDataD
         self.df1["ChangeD"] = (self.df1["CloseD"] - self.df1["CloseD"].shift(1)).fillna(0)
 
@@ -136,6 +142,15 @@ class TestApp(EWrapper, EClient):
 
         print(self.df1)
 
+    def atr_calc(self):
+        start = (datetime.datetime.strptime(date, '%Y-%m-%d') - datetime.timedelta(days=n)).strftime('%Y-%m-%d')
+        df = self.date[stock][start:date]
+        trs = []
+        for index, row in df.iterrows():
+            tr = max(row['_high'], row['_close']) - min(row['_low'], row['_close'])
+            trs.append(tr)
+        atr = list(pandas.Series(trs[::-1]).ewm(span=len(trs)).mean())[0]
+        return atr_calc()
 
 def main():
     app = TestApp()
