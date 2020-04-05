@@ -84,7 +84,7 @@ def atr_calc(pair):
         tr = max((row['h'] - row['l']), abs(row['h'] - row['c']), abs(row['l'] - row['c']))
         trz.append(tr)
     atr = list(pd.Series(trz).ewm(span=14).mean())[0]
-    return atr
+    print(atr)
 
 
 #true range=max[(high - low), abs(high - previous close), abs (low - previous close)]
@@ -116,7 +116,7 @@ def rsi_d_calc(pair):
         rs = up/down
         rsi_d[i] = 100. - 100./(1.+rs)
 
-    return rsi_d[-1]
+    print(rsi_d[-1])
 
 
 def rsi_h_calc(pair):
@@ -146,7 +146,7 @@ def rsi_h_calc(pair):
         rs = up/down
         rsi_h[i] = 100. - 100./(1.+rs)
 
-    return rsi_h[-1]
+    print(rsi_h[-1])
 
 
 if __name__ == "__main__":
