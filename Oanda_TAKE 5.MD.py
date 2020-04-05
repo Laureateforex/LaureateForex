@@ -11,9 +11,10 @@ import numpy as np
 import pandas as pd
 client = oandapyV20.API(access_token="3943fda13fb4e7085832a01eadfee5ef-3a1a62e075a3e0301b996ae8a632e63b")
 from collections import OrderedDict
+from oandapyV20.contrib.requests import (MarketOrderRequest, TakeProfitDetails, StopLossDetails)
 
 token = "3943fda13fb4e7085832a01eadfee5ef-3a1a62e075a3e0301b996ae8a632e63b"
-accountID = "13417875001"
+accountID = "101-004-13417875-001"
 
 
 def DataFrameFactory(r, colmap=None, conv=None):
@@ -84,7 +85,7 @@ def atr_calc(pair):
         tr = max((row['h'] - row['l']), abs(row['h'] - row['c']), abs(row['l'] - row['c']))
         trz.append(tr)
     atr = list(pd.Series(trz).ewm(span=14).mean())[0]
-    print(atr)
+    return atr
 
 
 #true range=max[(high - low), abs(high - previous close), abs (low - previous close)]
@@ -116,7 +117,7 @@ def rsi_d_calc(pair):
         rs = up/down
         rsi_d[i] = 100. - 100./(1.+rs)
 
-    print(rsi_d[-1])
+    return rsi_d[-1]
 
 
 def rsi_h_calc(pair):
@@ -146,7 +147,29 @@ def rsi_h_calc(pair):
         rs = up/down
         rsi_h[i] = 100. - 100./(1.+rs)
 
-    print(rsi_h[-1])
+    return rsi_h[-1]
+
+
+def order_buy_calc(pair, atr):
+    price = (df_h[pair].iloc[:,4]).astype(float)[0]
+    sl = price - (1 * atr)
+    tp = price + (1 * atr)
+
+    """print("the price for", i, "is: ", price)
+    print("the tp for", i, "is: ", tp)
+    print("the sl for", i, "is: ", sl)"""
+
+    takeProfitOnFillOrder = TakeProfitDetails(price=tp)
+    StopLossOnFillOrder = StopLossDetails(price=sl)
+
+    """print(takeProfitOnFillOrder.data)
+    print(StopLossOnFillOrder.data)"""
+
+    ordr = MarketOrderRequest(instrument=pair,
+                              units=1,
+                              takeProfitOnFill=takeProfitOnFillOrder.data,
+                              stopLossOnFill=StopLossOnFillOrder.data)
+    print(json.dumps(ordr.data, indent=4))
 
 
 if __name__ == "__main__":
@@ -185,21 +208,20 @@ if __name__ == "__main__":
             df_h.update({instr: DataFrameFactory_h(r_h.response)})
 
     """for i in instruments:
-        if rsi_d_calc(i) > 66 and rsi_h_calc(i) > 66:
-            print("buy")
-        elif rsi_d_calc(i) < 33 and rsi_h_calc(i) < 33:
-            print("sell")
-        else:
-            print("wait for cycle to repeat")"""
-
-    for i in instruments:
         print("The hourly LRP for ", i, "is:")
         rsi_h_calc(i)
         print("The daily LRP for ", i, "is:")
         rsi_d_calc(i)
         print("The ATR for ", i, "is:")
-        atr_calc(i)
+        atr_calc(i)"""
 
+    for i in instruments:
+        if rsi_d_calc(i) > 66 and rsi_h_calc(i) > 66:
+            print("buy")
+        elif rsi_d_calc(i) < 33 and rsi_h_calc(i) < 33:
+            print("sell")
+        else:
+            order_buy_calc(i, atr_calc(i))
 
 
 
