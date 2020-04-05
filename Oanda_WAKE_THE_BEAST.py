@@ -9,7 +9,7 @@ import oandapyV20.endpoints.instruments as v20instruments
 import oandapyV20.endpoints.accounts as accounts
 import numpy as np
 import pandas as pd
-api = oandapyV20.API(access_token="3943fda13fb4e7085832a01eadfee5ef-3a1a62e075a3e0301b996ae8a632e63b")
+client = oandapyV20.API(environment="practice", access_token="3943fda13fb4e7085832a01eadfee5ef-3a1a62e075a3e0301b996ae8a632e63b")
 from collections import OrderedDict
 from oandapyV20.contrib.requests import (MarketOrderRequest, TakeProfitDetails, StopLossDetails)
 import oandapyV20.endpoints.orders as orders
@@ -18,7 +18,6 @@ import logging
 
 token = "3943fda13fb4e7085832a01eadfee5ef-3a1a62e075a3e0301b996ae8a632e63b"
 accountID = "101-004-13417875-001"
-
 
 def DataFrameFactory(r, colmap=None, conv=None):
     def convrec(r, m):
@@ -177,7 +176,7 @@ def order_buy_calc(pair, atr):
 
 
 if __name__ == "__main__":
-    api = API(access_token=token)
+    api = oandapyV20.API(environment="practice", access_token=token)    # oandapyV20.API?
     params = {
         "count": 25,
         "granularity": "D"
@@ -227,19 +226,18 @@ if __name__ == "__main__":
             print("sell: ", i)
         else:
             for ob in order_buy_calc(i, atr_calc(i)):
-                r = orders.OrderCreate(accountID="101-004-13417875-001", data=ob)
-                print("REQUEST:{}".format(r))
+                ro = orders.OrderCreate(accountID=accountID, data=ob)
+                print("REQUEST:{}".format(ro))
                 print("====================")
                 print("r.data")
 
                 try:
-                    response = api.request(r)
+                    response = api.request(ro)
                 except V20Error as e:
                     print("V20Error: {}".format(e))
                 else:
-                    print("Response: {}\n{}".format(r.status_code,
+                    print("Response: {}\n{}".format(ro.status_code,
                                                     json.dumps(response, indent=2)))
-
 
 
 
