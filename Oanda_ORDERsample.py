@@ -34,16 +34,16 @@ if __name__ == "__main__":
 
 
     ordr = MarketOrderRequest(instrument="EUR_USD",
-                              units=100)
+                              units=1)
 
     order_buy = json.dumps(ordr.data, indent=4)
 
-    """ro = orders.OrderCreate(accountID=accountID, data=order_buy)
+    ro = requests.put(url, data=order_buy)
     print("REQUEST:{}".format(ro))
     print("====================")
     print("r.data")
 
-    response = api.request(ro)"""
+    response = api.request(ro)
 
     requestdata = requests.post(url, headers=header, params=order_buy)
     print(requestdata)
@@ -55,3 +55,5 @@ if __name__ == "__main__":
     else:
         print("Response: {}\n{}".format(ro.status_code,
                                         json.dumps(response, indent=2)))"""
+
+    print("Seychelles")
