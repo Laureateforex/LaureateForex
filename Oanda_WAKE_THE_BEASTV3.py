@@ -13,6 +13,8 @@ import numpy as np
 import pandas as pd
 from oandapyV20.endpoints import trades, pricing
 
+from Oanda_WAKE_THE_BEAST import access_token
+
 client = oandapyV20.API(environment="practice",
                         access_token="49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8")
 from collections import OrderedDict
@@ -22,13 +24,20 @@ from oandapyV20.exceptions import V20Error
 import logging
 import requests
 
-#token = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
+token = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
 accountID = "101-004-13417875-001"
+#Authorizaion = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
+
+
 
 domain = "api-fxpractice.oanda.com"
-url = "https://' + domain + '/v3/accounts/' + accountID + /orders"
-headers = {"Content-type": "application/json"}
+url =  "https://" + domain + "/v3/accounts/" + accountID + "/orders"
+header = {'Authorization': 'Bearer ' + 'Content-Type: application/json'}
 
+
+
+#headers = {"Authorization": "Bearer " + "Content-type: application/json"}
+#headers = {"Authorization": "Bearer " + access_token}
 logging.basicConfig(
 filename="v20.log",
 level=logging.INFO,
@@ -172,9 +181,9 @@ def order_buy_calc(pair, atr):
     sl = price - (1 * (atr * 0.50))
     tp = price + (1 * (atr * 0.50))
 
-    print("the price for", i, "is: ", price)
-    print("the tp for", i, "is: ", tp)
-    print("the sl for", i, "is: ", sl)
+    # print("the price for", i, "is: ", price)
+    # print("the tp for", i, "is: ", tp)
+    # print("the sl for", i, "is: ", sl)
 
     takeProfitOnFillOrder = TakeProfitDetails(price=tp)
     StopLossOnFillOrder = StopLossDetails(price=sl)
@@ -188,10 +197,10 @@ def order_buy_calc(pair, atr):
                               stopLossOnFill=StopLossOnFillOrder.data)
     order_buy = json.dumps(ordr.data, indent=4)
 
-    requestdata = orders.OrderCreate(url, data=order_buy)
+    requestdata = requests.post(url, data=order_buy)
 
     print(requestdata)
-    return MarketOrderRequest
+    return requestdata
 
 if __name__ == "__main__":
     api = API(access_token="49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8", environment="practice")
@@ -246,7 +255,7 @@ if __name__ == "__main__":
 
             # for ob in order_buy_calc(i, atr_calc(i)):
             #     ro = orders.OrderCreate(accountID=accountID,data=p)
-            headers = {'Content-type': 'application/json'}
+            # headers = {'Content-type': 'application/json'}
             #
             # for ob in order_buy_calc(i, atr_calc(i)):
             #     ro = orders.OrderCreate(accountID=accountID, data=ob)
@@ -266,23 +275,23 @@ if __name__ == "__main__":
 
 print(accounts.AccountSummary)
 
-# list of requests
-lor = []
-# request trades list
-lor.append(trades.TradesList(accountID))
-# request accounts list
-lor.append(accounts.AccountList())
-# request pricing info
-params={"instruments": "DE30_EUR,EUR_GBP"}
-lor.append(pricing.PricingInfo(accountID, params=params))
-
-for r in lor:
-    try:
-        rv = client.request(r)
-        # put request and response in 1 JSON structure
-        print("{}".format(json.dumps({"request": "{}".format(r),
-                                      "response": rv}, indent=2)))
-
-
-    except V20Error as e:
-        print("OOPS: {:d} {:s}".format(e.code, e.msg))
+# # list of requests
+# lor = []
+# # request trades list
+# lor.append(trades.TradesList(accountID))
+# # request accounts list
+# lor.append(accounts.AccountList())
+# # request pricing info
+# params={"instruments": "DE30_EUR,EUR_GBP"}
+# lor.append(pricing.PricingInfo(accountID, params=params))
+#
+# for r in lor:
+#     try:
+#         rv = client.request(r)
+#         # put request and response in 1 JSON structure
+#         print("{}".format(json.dumps({"request": "{}".format(r),
+#                                       "response": rv}, indent=2)))
+#
+#
+#     except V20Error as e:
+#         print("OOPS: {:d} {:s}".format(e.code, e.msg))
