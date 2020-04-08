@@ -158,7 +158,7 @@ def rsi_h_calc(pair):
 
 
 def order_buy_calc(pair, atr):
-    price = (df[pair].iloc[:,4]).astype(float)[0]
+    price = (df_h[pair].iloc[:,4]).astype(float)[0]
     sl = price - (1 * (atr * 0.50))
     tp = price + (1 * (atr * 0.50))
 
@@ -192,7 +192,7 @@ def order_buy_calc(pair, atr):
 
 
 def order_sell_calc(pair, atr):
-    price = (df[pair].iloc[:,4]).astype(float)[0]
+    price = (df_h[pair].iloc[:,4]).astype(float)[0]
     sl = price - (1 * (atr * 0.50))
     tp = price + (1 * (atr * 0.50))
 
