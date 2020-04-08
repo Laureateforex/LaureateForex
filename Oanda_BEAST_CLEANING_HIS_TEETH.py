@@ -173,7 +173,7 @@ def order_buy_calc(pair, atr):
     # print(StopLossOnFillOrder.data)
 
     order_buy = MarketOrderRequest(instrument=pair,
-                              units=1,
+                              units=10,
                               takeProfitOnFill=takeProfitOnFillOrder.data,
                               stopLossOnFill=StopLossOnFillOrder.data)
 
@@ -207,7 +207,7 @@ def order_sell_calc(pair, atr):
     # print(StopLossOnFillOrder.data)
 
     order_sell = MarketOrderRequest(instrument=pair,
-                              units=1,
+                              units=-10,
                               takeProfitOnFill=takeProfitOnFillOrder.data,
                               stopLossOnFill=StopLossOnFillOrder.data)
 
