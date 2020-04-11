@@ -1,29 +1,27 @@
-from typing import List, Any
-
 from ibapi.client import EClient
+from ibapi.order import Order
 from ibapi.wrapper import EWrapper
+from ibapi.contract import Contract
 from ContractSamples import ContractSamples
+from OrderSamples import OrderSamples
+from ibapi.ticktype import TickTypeEnum
 import pandas as pd
 import logging
 from threading import Timer
+import json
+import datetime
+import ibapi.common
+import json
+import csv
 
 n = 14
 
 
 class TestApp(EWrapper, EClient):
-    hDataD: List[Any]
-
     def __init__(self):
         EClient.__init__(self, self)
-        self.flipping = []
-        self.x = []
-        self.y = []
         self.hData = []
-        self.hDataD = []
-        self.df0 = pd.DataFrame()
         self.df = pd.DataFrame()
-        self.df1 = pd.DataFrame()
-        self.atr = pd.DataFrame()
         self.globalCancelOnly = False
         self.started = False
         self.nextValidOrderId = None
@@ -57,6 +55,9 @@ class TestApp(EWrapper, EClient):
             self.placeOrder(self.nextValidOrderId, contract, order)"""
             print("Executing requests ... finished")
 
+
+
+
     def stop(self):
         self.done = True
         self.disconnect()
@@ -65,25 +66,29 @@ class TestApp(EWrapper, EClient):
         # self.marketDepthOperations_cancel()
         print("Executing cancels ... finished")
 
+    def orderStatus(self, orderId, status, filled, remaining, avgFillPrice, permId, parentId, lastFillPrice, clientId, whyHeld, mktCapPrice):
+        print("OrderStatus. ID: ", orderId, ", Status: ", status, ", filled: ", filled,
+              ", Remaining: ", remaining, ", LastFillPrice: ", lastFillPrice)
+
+    def openOrder(self, orderId, contract, order, orderState):
+        print("OpenOrder. ID: ", orderId, contract.symbol, contract.secType, "0", contract.exchange,
+              "1", order.action, order.orderType, order.totalQuantity)
+
+    def execDetails(self, reqId, contract, execution):
+        print("ExecDetails: ", reqId, contract.symbol, contract.secType, contract.currency, execution.execId,
+              execution.orderId, execution.shares, execution.lastLiquidity)
+
     def historicalDataOperations_req(self):
         self.reqHistoricalData(1, ContractSamples.EurGbpFx(), "",
                                "1 M", "1 day", "MIDPOINT", 1, 1, False, [])
-        self.reqHistoricalData(2, ContractSamples.EurGbpFx(), "",
-                               "1 W", "1 hour", "MIDPOINT", 1, 1, False, [])
 
     def historicalData(self, reqId: int, bar):
-        if reqId == 1:
-            self.hData.append(bar.close)
-        else:
-            self.hDataD.append(bar.close)
+        self.hData.append(bar.close)
+        return ("HistoricalData. ", reqId, " ,Date:", bar.date, ",Open:", bar.open, ",High:", bar.high, ",Low:", bar.low,
+                ",Close:", bar.close, ",Volume:", bar.volume, ",Count:", bar.barCount, ",WAP:", bar.average)
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         super().historicalDataEnd(reqId, start, end)
-        self.lrp_hourly()
-        self.lrp_daily()
-        # self.atr_calc()
-
-    def lrp_hourly(self):
         global n
         self.df["Close"] = self.hData
         self.df["Change"] = (self.df["Close"] - self.df["Close"].shift(1)).fillna(0)
@@ -111,64 +116,15 @@ class TestApp(EWrapper, EClient):
         self.df["LRP"] = 100 - 100 / (self.df["Speed"] + 1)
         self.df["FLRP"] = list(self.df["LRP"][::-1])
 
-        self.df.loc[self.df["FLRP"] < 33, "match"] = "sell"
-        self.df.loc[self.df["FLRP"] < 15, "match"] = "wait"
-        self.df.loc[self.df["FLRP"] > 66, "match"] = "buy"
-        self.df.loc[self.df["FLRP"] > 80, "match"] = "wait"
-        self.df["match"] = self.df["match"].fillna("wait")
-
         print(self.df)
 
-    def lrp_daily(self):
-        global n
-        self.df1["CloseD"] = self.hDataD
-        self.df1["ChangeD"] = (self.df1["CloseD"] - self.df1["CloseD"].shift(1)).fillna(0)
-
-        self.df1["UpD"] = (self.df1["ChangeD"][self.df1["ChangeD"] > 0])
-        self.df1["UpD"] = self.df1["UpD"].fillna(0)
-
-        self.df1["DownD"] = (abs(self.df1["ChangeD"])[self.df1["ChangeD"] < 0]).fillna(0)
-        self.df1["DownD"] = self.df1["DownD"].fillna(0)
-
-        self.df1["Ave UpD"] = 0.00
-        self.df1["Ave UpD"][n] = self.df1["UpD"][1:n + 1].mean()
-
-        for i in range(n + 1, len(self.df1), 1):
-            self.df1["Ave UpD"][i] = (self.df1["Ave UpD"][i - 1] * (n - 1) + self.df1["UpD"][i]) / n
-
-        self.df1["Ave DownD"] = 0.00
-        self.df1["Ave DownD"][n] = self.df1["DownD"][1:n + 1].mean()
-
-        for i in range(n + 1, len(self.df1), 1):
-            self.df1["Ave DownD"][i] = (self.df1["Ave DownD"][i - 1] * (n - 1) + self.df1["DownD"][i]) / n
-
-        self.df1["SpeedD"] = (self.df1["Ave UpD"] / self.df1["Ave DownD"]).fillna(0)
-
-        self.df1["LRPD"] = 100 - 100 / (self.df1["SpeedD"] + 1)
-        self.df1["FLRPD"] = list(self.df1["LRPD"][::-1])
-
-        self.df1.loc[self.df1["FLRP"] < 33, "match"] = "sell"
-        self.df1.loc[self.df1["FLRP"] < 15, "match"] = "wait"
-        self.df1.loc[self.df1["FLRP"] > 66, "match"] = "buy"
-        self.df1.loc[self.df1["FLRP"] > 80, "match"] = "wait"
-        self.df1["match"] = self.df1["match"].fillna("wait")
-
-        print(self.df1)
-
-        # def atr_calc(self):
-        #     start = (datetime.datetime.strptime(date, '%Y-%m-%d') - datetime.timedelta(days=n)).strftime('%Y-%m-%d')
-        # df = self.date[stock][start:date]
-        # trs = []
-        # for index, row in df.iterrows():
-        #     tr = max(row['_high'], row['_close']) - min(row['_low'], row['_close'])
-        #     trs.append(tr)
-        # atr = list(pandas.Series(trs[::-1]).ewm(span=len(trs)).mean())[0]
-        # return atr_calc()
 
 def main():
     app = TestApp()
 
     app.connect("127.0.0.1", 7497, 988)  # LFX comment - this needs to be host, port, client ID
+
+    contract = ContractSamples.EurGbpFx()
 
     # order = OrderSamples.MarketOrder("buy", 10)
 

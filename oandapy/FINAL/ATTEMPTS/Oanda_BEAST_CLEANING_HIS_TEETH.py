@@ -1,36 +1,24 @@
 from __future__ import print_function
 
-import json
-
+import datetime
+import time
+import requests
 import oandapyV20
+import json
 from oandapyV20 import API
 import oandapyV20.endpoints.instruments as v20instruments
 import oandapyV20.endpoints.accounts as accounts
 import numpy as np
 import pandas as pd
-
-client = oandapyV20.API(environment="practice",
-                        access_token="49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8")
 from collections import OrderedDict
 from oandapyV20.contrib.requests import (MarketOrderRequest, TakeProfitDetails, StopLossDetails)
+import oandapyV20.endpoints.orders as orders
+from oandapyV20.exceptions import V20Error
 import logging
-import requests
 
 token = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
 accountID = "101-004-13417875-002"
-#Authorizaion = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
 
-Bearer = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
-
-domain = "api-fxpractice.oanda.com"
-url =  "https://" + domain + "/v3/accounts/" + accountID + "/orders"
-header = {'POST'+'Authorization': 'Bearer: '"49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8"  + 'Content-Type: application/json'}
-
-###header = {'POST'+'Authorization': 'Bearer ' + 'Content-Type: application/json'}
-
-
-#headers = {"Authorization": "Bearer " + "Content-type: application/json"}
-#headers = {"Authorization": "Bearer " + access_token}
 logging.basicConfig(
 filename="v20.log",
 level=logging.INFO,
@@ -181,32 +169,70 @@ def order_buy_calc(pair, atr):
     takeProfitOnFillOrder = TakeProfitDetails(price=tp)
     StopLossOnFillOrder = StopLossDetails(price=sl)
 
-    print(takeProfitOnFillOrder.data)
-    print(StopLossOnFillOrder.data)
+    # print(takeProfitOnFillOrder.data)
+    # print(StopLossOnFillOrder.data)
 
-
-   # requests.post(url, data=order_b)
-
-    ordr = MarketOrderRequest(instrument=pair,
-                              units=1,
+    order_buy = MarketOrderRequest(instrument=pair,
+                              units=10,
                               takeProfitOnFill=takeProfitOnFillOrder.data,
                               stopLossOnFill=StopLossOnFillOrder.data)
-    order_buy = json.dumps(ordr.data, indent=4)
 
-    requestdata = requests.post(url=url, data=order_buy)
+    r = orders.OrderCreate(accountID, data=order_buy.data)
+    print("Processing long order on : {}".format(r))
+    print("====================")
+    print(r.data)
 
-    print(requestdata)
-    return requestdata
+    try:
+        response = api.request(r)
+    except V20Error as e:
+        print("V20Error:{}".format(e))
+    else:
+        print("Respose: {}\n{}".format(r.status_code,
+                                       json.dumps(response, indent=2)))
+
+
+def order_sell_calc(pair, atr):
+    price = (df_h[pair].iloc[:,4]).astype(float)[0]
+    sl = price - (1 * (atr * 0.50))
+    tp = price + (1 * (atr * 0.50))
+
+    # print("the price for", i, "is: ", price)
+    # print("the tp for", i, "is: ", tp)
+    # print("the sl for", i, "is: ", sl)
+
+    takeProfitOnFillOrder = TakeProfitDetails(price=tp)
+    StopLossOnFillOrder = StopLossDetails(price=sl)
+
+    # print(takeProfitOnFillOrder.data)
+    # print(StopLossOnFillOrder.data)
+
+    order_sell = MarketOrderRequest(instrument=pair,
+                              units=-10,
+                              takeProfitOnFill=takeProfitOnFillOrder.data,
+                              stopLossOnFill=StopLossOnFillOrder.data)
+
+    r = orders.OrderCreate(accountID, data=order_sell.data)
+    print("Processing selling order of : {}".format(r))
+    print("====================")
+    print(r.data)
+
+    try:
+        response = api.request(r)
+    except V20Error as e:
+        print("V20Error:{}".format(e))
+    else:
+        print("Respose: {}\n{}".format(r.status_code,
+                                       json.dumps(response, indent=2)))
 
 if __name__ == "__main__":
-    api = API(access_token="49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8", environment="practice")
+    api = API(access_token=token, environment="practice")
+    instruments = ["EUR_USD","EUR_AUD", "GBP_CHF", "USD_JPY", "GBP_CAD", "EUR_GBP", "USD_CHF",
+                   "GBP_USD", "GBP_JPY", "AUD_USD", "AUD_JPY", "EUR_CHF", "USD_CAD", "CHF_JPY"]
     params = {
             "count": 25, "granularity": "D"
     }
-    instruments = ["EUR_USD","EUR_AUD", "GBP_CHF", "USD_JPY", "GBP_CAD", "EUR_GBP", "USD_CHF",
-                   "GBP_USD", "GBP_JPY", "AUD_USD", "AUD_JPY", "EUR_CHF", "USD_CAD", "CHF_JPY"]
     df = dict()
-#orders.endpoint(url,"GET",200),
+
     params_h = {
         "count": 25,
         "granularity": "H1"
@@ -223,15 +249,15 @@ if __name__ == "__main__":
         else:
             df.update({instr: DataFrameFactory(r.response)})
 
-    for instr in instruments:
+    for instr_h in instruments:
         try:
-            r_h = v20instruments.InstrumentsCandles(instrument=instr, params=params_h)
+            r_h = v20instruments.InstrumentsCandles(instrument=instr_h, params=params_h)
             api.request(r_h)
         except Exception as err:
             print("Error: {}".format(err))
             exit(2)
         else:
-            df_h.update({instr: DataFrameFactory_h(r_h.response)})
+            df_h.update({instr_h: DataFrameFactory_h(r_h.response)})
 
     """for i in instruments:
         print("The hourly LRP for ", i, "is:")
@@ -243,94 +269,10 @@ if __name__ == "__main__":
 
     for i in instruments:
         if rsi_d_calc(i) > 66 and rsi_h_calc(i) > 66:
-            print("buy: ", i) and requests.post(url=url, data=instruments, side="BUY")
-        elif rsi_d_calc(i) < 33 and rsi_h_calc(i) < 33:
-            print("sell: ", i) and requests.post(url=url, data=instruments, side="SELL")
-        else:
             order_buy_calc(i, atr_calc(i))
-    #############
-    #############
-    #############           WE  HAVE  TO  LINK  THE  ABOVE  4 LINES  TO  BELOW ....
-#############
-#############
-#############
-    orderConf =            [
-
-
-            {
-                "order": {
-                    "units": "1",
-                    "instrument": "EUR_USD",
-                    "timeInForce": "FOK",
-                    "type": "MARKET",
-                    "positionFill": "DEFAULT"
-                }
-            }
-
-
-]
-for O in orderConf:
-            r = orders.OrderCreate(accountID, data=O)
-            print("Processing : {}".format(r))
-            print("====================")
-            print(r.data)
-
-            try:
-                response = api.request(r)
-            except V20Error as e:
-                print("V20Error:{}".format(e))
-            else:
-                print("Respose: {}\n{}".format(r.status_code,
-                                               json.dumps(response, indent=2)))
-
-            # for ob in order_buy_calc(i, atr_calc(i)):
-            #     ro = orders.OrderCreate(accountID=accountID,data=p)
-            # headers = {'Content-type': 'application/json'}
-            #
-            # for ob in order_buy_calc(i, atr_calc(i)):
-            #     ro = orders.OrderCreate(accountID=accountID, data=ob)
-            #     print("REQUEST:{}".format(ro))
-            #     print("====================")
-            #     print("r.data")
-            #
-            #     try:
-            #         response = api.request(ro)
-            #     except V20Error as e:
-            #         print("V20Error: {}".format(e))
-            #     else:
-            #         print("Response: {}\n{}".format(ro.status_code,
-            #                                         json.dumps(response, indent=2)))
-
-
+        elif rsi_d_calc(i) < 33 and rsi_h_calc(i) < 33:
+            order_sell_calc(i, atr_calc(i))
+        else:
+            print("No current opportunities, waiting for next cycle in: ", i)
 
 print(accounts.AccountSummary)
-
-# # list of requests
-# lor = []
-# # request trades list
-# lor.append(trades.TradesList(accountID))
-# # request accounts list
-# lor.append(accounts.AccountList())
-# # request pricing info
-# params={"instruments": "DE30_EUR,EUR_GBP"}
-# lor.append(pricing.PricingInfo(accountID, params=params))
-#
-# for r in lor:
-#     try:
-#         rv = client.request(r)
-#         # put request and response in 1 JSON structure
-#         print("{}".format(json.dumps({"request": "{}".format(r),
-#                                       "response": rv}, indent=2)))
-#
-#
-#     except V20Error as e:
-#         print("OOPS: {:d} {:s}".format(e.code, e.msg))
-
-
-# import oandapyV20.endpoints.accounts as accounts
-# #
-# # client = oandapyV20.API(access_token=token)
-# #
-# # r = accounts.AccountChanges(accountID=accountID, params=None)
-# # client.request(r)
-# # print(r.response)

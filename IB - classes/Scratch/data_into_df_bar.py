@@ -5,8 +5,8 @@ import pandas as pd
 import logging
 from threading import Timer
 
-
 n = 14
+
 
 class TestApp(EWrapper, EClient):
     def __init__(self):
@@ -52,13 +52,17 @@ class TestApp(EWrapper, EClient):
 
     def historicalDataOperations_req(self):
         self.reqHistoricalData(10, ContractSamples.EurGbpFx(), "",
-                               "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+                               "1 D", "1 hour", "MIDPOINT", 1, 1, True, [])
         self.reqHistoricalData(20, ContractSamples.EurUsdFx(), "",
                                "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
 
     def historicalData(self, reqId: int, bar):
         if reqId == 10:
-            self.hData.append(bar.close)
+            try:
+                self.hData.append(bar.close)
+            except ValueError:
+                if bar.close == 0:
+                    pass
         elif reqId == 20:
             self.hDataD.append(bar.close)
         else:
@@ -69,8 +73,10 @@ class TestApp(EWrapper, EClient):
         self.data()
 
     def data(self):
-        self.df["Close"] = self.hData
-        print(self.df)
+        df = pd.DataFrame(self.hData, columns=['Close'])
+        print(df)
+
+
 
 
 """if y.empty:
@@ -81,17 +87,7 @@ class TestApp(EWrapper, EClient):
 """def daily(self):
         self.x = self.x.rename(columns={0: "Close"})
         self.x["Change"] = (self.x["Close"] - self.x["Close"].shift(1)).fillna(0)
-        print(self.x)        print(reqId, bar.close)
-        with open("DATAJ", "w") as fp:
-            json.dump(reqId, bar.close)
-            
-            A = np.array(A)[:, None]
-            
-                    x = bar.close
-
-        for i in range(x):
-            self.hData += i
-"""
+        print(self.x)"""
 
 def main():
     app = TestApp()

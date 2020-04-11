@@ -1,5 +1,6 @@
 from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
+from ibapi.contract import Contract
 from ContractSamples import ContractSamples
 import datetime
 import numpy as np

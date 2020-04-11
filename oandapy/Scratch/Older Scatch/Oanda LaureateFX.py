@@ -4,7 +4,7 @@ response_usdcad = oanda.get_prices(instruments="USD_CAD")
 
 account_id = "13417875001"
 
-key = "12a1f42967bc9ce1cd0ebf8f46da9a02-03ab1a77bb8478b89690ca77adcbf934"
+key = "3943fda13fb4e7085832a01eadfee5ef-3a1a62e075a3e0301b996ae8a632e63b"
 
 
 

@@ -1,36 +1,25 @@
 from __future__ import print_function
 
+import datetime
+import time
 import json
-
 import oandapyV20
 from oandapyV20 import API
 import oandapyV20.endpoints.instruments as v20instruments
 import oandapyV20.endpoints.accounts as accounts
 import numpy as np
 import pandas as pd
-
-client = oandapyV20.API(environment="practice",
-                        access_token="49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8")
+client = oandapyV20.API(environment="practice", access_token="49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8")
 from collections import OrderedDict
 from oandapyV20.contrib.requests import (MarketOrderRequest, TakeProfitDetails, StopLossDetails)
+import oandapyV20.endpoints.orders as orders
+from oandapyV20.exceptions import V20Error
 import logging
 import requests
 
 token = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
 accountID = "101-004-13417875-002"
-#Authorizaion = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
 
-Bearer = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
-
-domain = "api-fxpractice.oanda.com"
-url =  "https://" + domain + "/v3/accounts/" + accountID + "/orders"
-header = {'POST'+'Authorization': 'Bearer: '"49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8"  + 'Content-Type: application/json'}
-
-###header = {'POST'+'Authorization': 'Bearer ' + 'Content-Type: application/json'}
-
-
-#headers = {"Authorization": "Bearer " + "Content-type: application/json"}
-#headers = {"Authorization": "Bearer " + access_token}
 logging.basicConfig(
 filename="v20.log",
 level=logging.INFO,
@@ -187,18 +176,25 @@ def order_buy_calc(pair, atr):
 
    # requests.post(url, data=order_b)
 
-    ordr = MarketOrderRequest(instrument=pair,
+    order_buy = MarketOrderRequest(instrument=pair,
                               units=1,
                               takeProfitOnFill=takeProfitOnFillOrder.data,
                               stopLossOnFill=StopLossOnFillOrder.data)
-    order_buy = json.dumps(ordr.data, indent=4)
 
-    requestdata = requests.post(url=url, data=order_buy)
+    r = orders.OrderCreate(accountID, data=order_buy.data)
+    print("Processing : {}".format(r))
+    print("====================")
+    print(r.data)
 
-    print(requestdata)
-    return requestdata
+    try:
+        response = api.request(r)
+    except V20Error as e:
+        print("V20Error:{}".format(e))
+    else:
+        print("Respose: {}\n{}".format(r.status_code,
+                                       json.dumps(response, indent=2)))
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     api = API(access_token="49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8", environment="practice")
     params = {
             "count": 25, "granularity": "D"
@@ -248,13 +244,13 @@ if __name__ == "__main__":
             print("sell: ", i) and requests.post(url=url, data=instruments, side="SELL")
         else:
             order_buy_calc(i, atr_calc(i))
-    #############
+    ###########
     #############
     #############           WE  HAVE  TO  LINK  THE  ABOVE  4 LINES  TO  BELOW ....
 #############
 #############
 #############
-    orderConf =            [
+    """orderConf =            [
 
 
             {
@@ -281,7 +277,7 @@ for O in orderConf:
                 print("V20Error:{}".format(e))
             else:
                 print("Respose: {}\n{}".format(r.status_code,
-                                               json.dumps(response, indent=2)))
+                                               json.dumps(response, indent=2)))"""
 
             # for ob in order_buy_calc(i, atr_calc(i)):
             #     ro = orders.OrderCreate(accountID=accountID,data=p)

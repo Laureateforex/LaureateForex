@@ -4,6 +4,7 @@ from ContractSamples import ContractSamples
 import pandas as pd
 import logging
 from threading import Timer
+import numpy as np
 
 n = 14
 
@@ -11,15 +12,19 @@ n = 14
 class TestApp(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
-        self.x = []
-        self.hData = []
-        self.df = pd.DataFrame()
+        self.hDataD = {}
+        #pd.DataFrame(datah=None, index=None, columns=None, dtype=None, copy=False)
+        self.hData = {}
+        # self.x = {}
+        # self.y = {}
+        # self.df = {}
+        # self.dfd = {}
         self.globalCancelOnly = False
         self.started = False
         self.nextValidOrderId = None
         self.started = False
         self.done = False
-
+        self.asynchronous
     def error(self, reqId, errorCode, errorString):
         print("Error: ", reqId, " ", errorCode, " ", errorString)
 
@@ -49,25 +54,42 @@ class TestApp(EWrapper, EClient):
 
     def historicalDataOperations_req(self):
         self.reqHistoricalData(1, ContractSamples.EurGbpFx(), "",
-                               "1 M", "1 day", "MIDPOINT", 1, 1, False, [])
-        self.reqHistoricalData(2, ContractSamples.EurGbpFx(), "",
-                               "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+                               "1 D", "1 hour", "MIDPOINT", 1, 1, True, ["22"])
+        self.reqHistoricalData(2, ContractSamples.EurUsdFx(), "",
+                               "1 D", "1 hour", "MIDPOINT", 1, 1, False, ["33"])
 
     def historicalData(self, reqId: int, bar):
-        if reqId == 1:
-            self.hData.append(bar.close)
+        if reqId == 10:
+            try:
+                self.hData.values(bar.close)
+            except ValueError:
+                if bar.close == 0:
+                    pass
+        elif reqId == 20:
+            self.hDataD.keys()
         else:
             pass
-
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         super().historicalDataEnd(reqId, start, end)
         self.data()
 
     def data(self):
-        self.df["Close"] = self.hData
+        df = pd.DataFrame(self.hData, columns=['Close'])
+        print(df)
 
-        print(self.df)
+
+
+
+"""if y.empty:
+            del y
+        else:
+            self.x = pd.DataFrame(y)
+            self.daily()"""
+"""def daily(self):
+        self.x = self.x.rename(columns={0: "Close"})
+        self.x["Change"] = (self.x["Close"] - self.x["Close"].shift(1)).fillna(0)
+        print(self.x)"""
 
 def main():
     app = TestApp()

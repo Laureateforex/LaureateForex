@@ -1,7 +1,14 @@
 from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
+from ibapi.contract import Contract
 from ContractSamples import ContractSamples
+from ibapi.ticktype import TickTypeEnum
 import pandas as pd
+import json
+import datetime
+import ibapi.common
+import json
+import csv
 
 n = 14
 
@@ -100,9 +107,9 @@ def main():
 
     app.connect("127.0.0.1", 7497, 988)  # LFX comment - this needs to be host, port, client ID
 
-    contract = ContractSamples.EurUsdFx()
+    contract = ContractSamples.EurGbpFx()
 
-    app.reqHistoricalData(1, contract, "", "1 M", "1 day", "MIDPOINT", 0, 1, False, [])
+    app.reqHistoricalData(1, contract, "", "7 D", "1 hour", "MIDPOINT", 0, 1, False, [])
 
     app.run()
 

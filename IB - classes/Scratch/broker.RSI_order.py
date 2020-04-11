@@ -1,4 +1,5 @@
 from ibapi.client import EClient
+from ibapi.order import Order
 from ibapi.wrapper import EWrapper
 from ContractSamples import ContractSamples
 import pandas as pd
@@ -45,6 +46,9 @@ class TestApp(EWrapper, EClient):
             order = OrderSamples.MarketOrder("buy", 10)
             self.placeOrder(self.nextValidOrderId, contract, order)"""
             print("Executing requests ... finished")
+
+
+
 
     def stop(self):
         self.done = True

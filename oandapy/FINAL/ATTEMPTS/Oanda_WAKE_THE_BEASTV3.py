@@ -1,6 +1,9 @@
 from __future__ import print_function
 
+import datetime
+import time
 import json
+from distutils.command.config import config
 
 import oandapyV20
 from oandapyV20 import API
@@ -8,11 +11,16 @@ import oandapyV20.endpoints.instruments as v20instruments
 import oandapyV20.endpoints.accounts as accounts
 import numpy as np
 import pandas as pd
+from oandapyV20.endpoints import trades, pricing
+
+from Oanda_WAKE_THE_BEAST import access_token
 
 client = oandapyV20.API(environment="practice",
                         access_token="49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8")
 from collections import OrderedDict
 from oandapyV20.contrib.requests import (MarketOrderRequest, TakeProfitDetails, StopLossDetails)
+import oandapyV20.endpoints.orders as orders
+from oandapyV20.exceptions import V20Error
 import logging
 import requests
 

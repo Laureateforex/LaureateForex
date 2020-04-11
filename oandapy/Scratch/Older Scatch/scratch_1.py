@@ -1,5 +1,5 @@
 import pandas as pd
-import _json as json
+import json as js
 from backtesting import Backtest, Strategy
 
 from backtesting.test import 
