@@ -257,9 +257,9 @@ if __name__ == "__main__":
             df_h.update({instr_h: DataFrameFactory_h(r_h.response)})
 
     for i in instruments:
-        if rsi_d_calc(i) > 66 and rsi_h_calc(i) > 66 and not (i in open_position()):
+        if 66 < rsi_d_calc(i) < 80 and 66 < rsi_h_calc(i) < 80 and not (i in open_position()):
             order_buy_calc(i, atr_calc(i))
-        elif rsi_d_calc(i) < 33 and rsi_h_calc(i) < 33 and not (i in open_position()):
+        elif 20 < rsi_d_calc(i) < 33 and 20 < rsi_h_calc(i) < 33 and not (i in open_position()):
             order_sell_calc(i, atr_calc(i))
         else:
             print("No opportunities in: ", i + ",", "daily LRP is: ", rsi_d_calc(i), "and hourly LRP is: ", rsi_h_calc(i))
