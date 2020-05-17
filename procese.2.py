@@ -57,7 +57,7 @@ class LFX:
                 # this needs be if right and TP first? based on high value?
                 for i in range(len(transactions)):
                     transactions[i]['open_value'] = v
-                    transactions[i]['stop_value'] = v * 1.02  # Change to ATR at later date!
+                    transactions[i]['stop_value'] = v * 1.10  # Change to ATR at later date!
                     transactions[i]['yield'] = (transactions[i]['stop_value'] - transactions[i]['open_value']) * 100 / transactions[i]['open_value']
                     cumyield += transactions[i]['yield']
                     print(' Yield: ', transactions[i]['yield'], 'Cumyield:',
@@ -68,7 +68,16 @@ class LFX:
                 #transactions[i]['last_value'] = v
                 #transactions[i]['yield'] = (transactions[i]['short_value'] - transactions[i]['last_value']) * 100 / transactions[i]['short_value']
 
+
         graph = {}
+        yield_ = 0
+
+        for transaction in transactions:
+            diff = (transaction['stop_value'] - transaction['open_value']) * 100 / transaction['open_value']
+            yield_ += diff
+
+        print('Yield:', yield_)
+
 
         json.dump(transactions, open('transactions.json', 'w'))
         if transactions != []:
@@ -81,6 +90,7 @@ class LFX:
             plt = graph.plot(title='% yield')
             plt.get_figure().savefig('yield.png')
         return transactions
+
 
 if __name__ == "__main__":
     lfx = LFX()
