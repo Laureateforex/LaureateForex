@@ -21,11 +21,10 @@ token = '49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8'
 accountID = "101-004-13417875-002"
 
 logging.basicConfig(
-filename="v20.log",
-level=logging.INFO,
-format='%(asctime)s [%(levelname)s] %(name)s : %(message)s',
+    filename="v20.log",
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s : %(message)s',
 )
-
 
 def DataFrameFactory(r, colmap=None, conv=None):
     def convrec(r, m):
@@ -197,8 +196,8 @@ def order_buy_calc(pair, atr):
 
 def order_sell_calc(pair, atr):
     price = (df_h[pair].iloc[:,4]).astype(float)[0]
-    sl = price + (1 * (atr * 0.50))
-    tp = price - (1 * (atr * 0.50))
+    sl = price - (1 * (atr * 0.50))
+    tp = price + (1 * (atr * 0.50))
 
     takeProfitOnFillOrder = TakeProfitDetails(price=tp)
     StopLossOnFillOrder = StopLossDetails(price=sl)
@@ -257,11 +256,45 @@ if __name__ == "__main__":
             df_h.update({instr_h: DataFrameFactory_h(r_h.response)})
 
     for i in instruments:
-        if 66 < rsi_d_calc(i) < 80 and 66 < rsi_h_calc(i) < 80 and not (i in open_position()):
+        if rsi_d_calc(i) > 66 and rsi_h_calc(i) > 66 and not (i in open_position()):
             order_buy_calc(i, atr_calc(i))
-        elif 20 < rsi_d_calc(i) < 33 and 20 < rsi_h_calc(i) < 33 and not (i in open_position()):
+        elif rsi_d_calc(i) < 33 and rsi_h_calc(i) < 33 and not (i in open_position()):
             order_sell_calc(i, atr_calc(i))
         else:
             print("No opportunities in: ", i + ",", "daily LRP is: ", rsi_d_calc(i), "and hourly LRP is: ", rsi_h_calc(i))
 
-print(accounts.AccountSummary)
+print(accounts.endpoint(positions))
+
+# print(requests.request(https://api-fxtrade.oanda.com/v3/accounts/<ACCOUNT>/positions))
+
+
+client = oandapyV20.API(access_token=token)
+r = acc(accountID=accountID)
+client.request(r)
+
+df = pd.DataFrame(r.response)
+
+
+
+print(df.head(300).to_string())
+
+
+
+# print(df)
+#
+#
+# import requests
+# import pandas as pd
+# import io
+# #
+# # urlData = requests.get("https://api-fxtrade.oanda.com/v3/accounts/101-004-13417875-002/PositionsList).content")
+# # print(urlData)
+#
+#
+# # print(requests.get("https://api-fxpractice.oanda.com/v3/accounts/101-004-13417875-008/positions"))
+
+#
+# #
+# # "Content-Type: application/json" \
+# #   -H "Authorization: Bearer <AUTHENTICATION TOKEN>" \
+# #   "https://api-fxtrade.oanda.com/v3/accounts/<ACCOUNT>/positions"

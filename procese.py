@@ -54,12 +54,12 @@ class LFX:
         cumyield = 0
 
         for i in range(605):
-            if i % 100 == 0:
-                json.dump(transactions, open('transactions.json', 'w'))
-            date = end_date - datetime.timedelta(days=605 - i)
-            datestr = date.strftime('%Y-%m-%d')
-            print(date)
-            wl = self.get_52_week_stocks(date)
+            # if i % 100 == 0:
+            #             #     json.dump(transactions, open('transactions.json', 'w'))
+            #             # date = end_date - datetime.timedelta(days=605 - i)
+            #             # datestr = date.strftime('%Y-%m-%d')
+            #             # print(date)
+            #             # wl = self.get_52_week_stocks(date)
 
             for i in range(len(transactions)):
                 if transactions[i]['status'] == 'open':
@@ -120,6 +120,6 @@ if __name__ == "__main__":
 
     lfx = LFX()
     lfx.run()
-    lfx.backtest()
+    #lfx.backtest()
 
 

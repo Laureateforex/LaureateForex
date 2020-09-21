@@ -2,7 +2,7 @@ import pandas as pd
 import json
 import datetime
 import numpy as np
-
+import matplotlib as plt
 
 class LFX:
     def run(self):
@@ -88,8 +88,13 @@ class LFX:
             graph = graph.sort_index()
             graph = graph.cumsum()
             plt = graph.plot(title='% yield')
-            plt.get_figure().savefig('yield.png')
+            plt.get_figure().savefig('yieldLFX.png')
+            plt.show(cumyield)
+
         return transactions
+
+
+
 
 
 if __name__ == "__main__":
