@@ -2,10 +2,18 @@ from typing import List, Any
 
 from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
+from ibapi.contract import Contract
 from ContractSamples import ContractSamples
+from OrderSamples import OrderSamples
+from ibapi.ticktype import TickTypeEnum
 import pandas as pd
 import logging
 from threading import Timer
+import json
+import datetime
+import ibapi.common
+import json
+import csv
 
 n = 14
 
@@ -15,12 +23,8 @@ class TestApp(EWrapper, EClient):
 
     def __init__(self):
         EClient.__init__(self, self)
-        self.flipping = []
-        self.x = []
-        self.y = []
         self.hData = []
         self.hDataD = []
-        self.df0 = pd.DataFrame()
         self.df = pd.DataFrame()
         self.df1 = pd.DataFrame()
         self.atr = pd.DataFrame()
@@ -73,7 +77,7 @@ class TestApp(EWrapper, EClient):
 
     def historicalData(self, reqId: int, bar):
         if reqId == 1:
-            self.hData.append(bar.close)
+            self.hData.__add__(bar.close.__format__(dict))
         else:
             self.hDataD.append(bar.close)
 

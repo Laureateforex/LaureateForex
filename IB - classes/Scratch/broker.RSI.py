@@ -12,8 +12,51 @@ class TestApp(EWrapper, EClient):
         self.hData = []
         self.df = pd.DataFrame()
 
+
     def error(self, reqId, errorCode, errorString):
         print("Error: ", reqId, " ", errorCode, " ", errorString)
+
+
+
+############## E U R O ----- G B P    ##############
+
+    def historicalData(self, reqId: int, bar):
+        self.hData.append(bar.close)
+        return("HistoricalData. ", reqId, " ,Date:", bar.date, ",Open:", bar.open, ",High:", bar.high, ",Low:", bar.low,
+              ",Close:", bar.close, ",Volume:", bar.volume, ",Count:", bar.barCount, ",WAP:", bar.average)
+
+    def historicalDataEnd(self, reqId: int, start: str, end: str):
+        super().historicalDataEnd(reqId, start, end)
+        global n
+        self.hData["Close"] = self.hData
+        self.hData["Change"] = (self.hData["Close"] - self.hData["Close"].shift(1)).fillna(0)
+
+        self.hData["Up"] = (self.hData["Change"][self.hData["Change"] > 0])
+        self.hData["Up"] = self.hData["Up"].fillna(0)
+
+        self.hData["Down"] = (abs(self.hData["Change"])[self.hData["Change"] < 0]).fillna(0)
+        self.hData["Down"] = self.hData["Down"].fillna(0)
+
+        self.hData["Ave Up"] = 0.00
+        self.hData["Ave Up"][n] = self.hData["Up"][1:n + 1].mean()
+
+        for i in range(n + 1, len(self.hData), 1):
+            self.hData["Ave Up"][i] = (self.hData["Ave Up"][i - 1] * (n - 1) + self.hData["Up"][i]) / n
+
+        self.hData["Ave Down"] = 0.00
+        self.hData["Ave Down"][n] = self.hData["Down"][1:n + 1].mean()
+
+        for i in range(n + 1, len(self.hData), 1):
+            self.hData["Ave Down"][i] = (self.hData["Ave Down"][i - 1] * (n - 1) + self.hData["Down"][i]) / n
+
+        self.hData["Speed"] = (self.hData["Ave Up"] / self.hData["Ave Down"]).fillna(0)
+
+        self.hData["LRP"] = 100 - 100 / (self.hData["Speed"] + 1)
+        self.hData["FLRP"] = list(self.hData["LRP"][::-1])
+
+        print(self.hData)
+
+############## E U R O ----- G B P    ##############
 
     def historicalData(self, reqId: int, bar):
         self.hData.append(bar.close)

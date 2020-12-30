@@ -1,7 +1,10 @@
 from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
 from ContractSamples import ContractSamples
-
+import datetime
+import numpy as np
+import json
+import requests
 
 class TestApp(EWrapper, EClient):
     def __init__(self):
@@ -23,6 +26,11 @@ def main():
                  ContractSamples.EurChfFx(), ContractSamples.EurJpyFx(), ContractSamples.EurUsdFx(),
                  ContractSamples.GbpChfFx(), ContractSamples.GbpJpyFx(), ContractSamples.NzdUsdFx(),
                  ContractSamples.UsdJpyFx()]
+
+    JSONContent = requests.get(contracts).json()
+    content = json.dumps(JSONContent, indent = 4, sort_keys=True)
+
+    print(content)
 
     for i in contracts:
         app.reqContractDetails(1, i)

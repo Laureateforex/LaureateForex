@@ -67,7 +67,7 @@ class TestApp(EWrapper, EClient):
     def data(self):
         self.df["Close"] = self.hData
 
-
+        print(self.df)
 
 def main():
     app = TestApp()

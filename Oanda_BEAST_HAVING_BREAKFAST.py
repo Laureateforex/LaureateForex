@@ -193,7 +193,13 @@ def order_buy_calc(pair, atr):
     print(StopLossOnFillOrder.data)
 
 
-   # requests.post(url, data=order_b)
+    #############
+    #############
+    #############          CHECK ORDER  BELOW ....
+    #############
+    #############
+
+    # requests.post(url, data=order_b)
 
     ordr = MarketOrderRequest(instrument=pair,
                               units=1,
@@ -203,8 +209,12 @@ def order_buy_calc(pair, atr):
 
     requestdata = requests.post(url=url, data=order_buy)
 
-    print(requestdata)
-    return requestdata
+    # print(requestdata)
+    # return requestdata
+
+
+
+
 
 if __name__ == "__main__":
     api = API(access_token="49c68257ae0870c5b76bbe63d4c79803-bc876dfcc6b0ebcc31ef73e45ebdbab8", environment="practice")
@@ -262,7 +272,9 @@ if __name__ == "__main__":
 #############
 #############
 #############
-    orderConf =            [
+
+
+orderConf =            [
 
 
             {
